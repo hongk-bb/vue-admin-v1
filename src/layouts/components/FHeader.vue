@@ -10,8 +10,16 @@ const {
   toggle
 } = useFullscreen()
 
-const { form, rules, formRef, formDrawerRef, onSubmit, rePassword, user } =
-  useRepassword()
+const {
+  form,
+  rules,
+  formRef,
+  formDrawerRef,
+  onSubmit,
+  rePassword,
+  user,
+  managerStore
+} = useRepassword()
 
 const { logout } = useLogout()
 
@@ -26,7 +34,10 @@ const handleRefresh = () => {
       <el-icon class="mr-1"><eleme-filled /></el-icon>
       商城后台
     </span>
-    <el-icon class="icon-btn"><fold /></el-icon>
+    <el-icon class="icon-btn" @click="managerStore.handleAsideWidthAction">
+      <fold v-if="!managerStore.asideCollapsed" />
+      <expand v-else />
+    </el-icon>
     <el-tooltip effect="dark" content="刷新" placement="bottom">
       <el-icon class="icon-btn" @click="handleRefresh"><refresh /></el-icon>
     </el-tooltip>
@@ -121,9 +132,5 @@ const handleRefresh = () => {
   height: 64px;
   cursor: pointer;
   @apply flex justify-center items-center mx-5;
-}
-
-:focus-visible {
-  outline: none;
 }
 </style>

@@ -6,17 +6,31 @@ import { LOGIN_TOKEN } from '@/global/constants'
 
 export const useManagerStore = defineStore('manager', {
   state: () => ({
-    user: null as any
+    user: null as any,
+    asideCollapsed: false,
+    menus: [] as any[],
+    ruleNames: []
   }),
-  getters: {},
+  getters: {
+    getAsideWidth(state) {
+      return state.asideCollapsed ? '64px' : '250px'
+    }
+  },
   actions: {
     async loginAction(data: IAccount) {
       const res = await login(data)
       localCache.setCache(LOGIN_TOKEN, res?.token)
     },
     async getInfoAction() {
-      const res = await getinfo()
-      this.user = res
+      if (!this.user) {
+        const res = await getinfo()
+        this.user = res
+        // console.log('get !!! user:', this.user)
+      }
+      this.menus = this.user?.menus
+      this.ruleNames = this.user?.ruleNames
+      // console.log('get !!! menus:', this.menus)
+      // console.log('get !!! ruleNames:', this.ruleNames)
     },
     async logoutAction() {
       await logout()
@@ -24,6 +38,9 @@ export const useManagerStore = defineStore('manager', {
     },
     async updatepasswordAction(data: IRepassAccount) {
       await updatepassword(data)
+    },
+    handleAsideWidthAction() {
+      this.asideCollapsed = !this.asideCollapsed
     }
   }
 })

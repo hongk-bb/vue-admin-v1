@@ -79,7 +79,8 @@ export const useRepassword = () => {
     formDrawerRef,
     onSubmit,
     rePassword,
-    user
+    user,
+    managerStore
   }
 }
 

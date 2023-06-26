@@ -6,39 +6,83 @@ import { hideFullLoading, showFullLoading, toast } from '@/utils/util'
 import { useManagerStore } from '@/stores/manager'
 
 import Admin from '../layouts/Admin.vue'
-import Home from '../views/home/Home.vue'
+import Login from '../views/login/Login.vue'
 import NotFound from '../views/notfound/NotFound.vue'
+import { storeToRefs } from 'pinia'
 
+// 默认路由，所有用户共享
 const routes = [
   {
     path: '/',
-    name: 'Admin',
-    component: Admin,
-    // 子路由
-    children: [
-      {
-        path: '/',
-        component: Home,
-        meta: {
-          title: '后台首页'
-        }
-      }
-    ]
+    name: 'admin',
+    component: Admin
   },
   {
     path: '/login',
     name: 'login',
-    component: () => import('../views/userform/Login.vue'),
+    component: Login,
     meta: {
       title: '登录页'
     }
   },
   {
     path: '/:pathMatch(.*)*',
-    name: 'NotFound',
+    name: 'notfound',
     component: NotFound
   }
 ]
+
+// 动态路由，用于匹配菜单动态添加路由
+const asyncRoutes = [
+  {
+    path: '/',
+    name: '/',
+    component: () => import('../views/Index.vue'),
+    meta: {
+      title: '后台首页'
+    }
+  },
+  {
+    path: '/goods/list',
+    name: '/goods/list',
+    component: () => import('../views/goods/GoodsList.vue'),
+    meta: {
+      title: '商品管理'
+    }
+  },
+  {
+    path: '/category/list',
+    name: '/category/list',
+    component: () => import('../views/category/CategoryList.vue'),
+    meta: {
+      title: '分类列表'
+    }
+  }
+]
+
+// 动态添加路由的方法
+const addRoutes = (menus: any[]): boolean => {
+  // 是否有新的路由
+  let hasNewRoutes = false
+
+  const findAndAddRoutesByMenus = (arr: any[]) => {
+    arr.forEach(e => {
+      let item = asyncRoutes.find(o => o.path === e.frontpath)
+      if (item && !router.hasRoute(item.path)) {
+        router.addRoute('admin', item)
+        hasNewRoutes = true
+      }
+
+      if (e.child && e.child.length > 0) {
+        findAndAddRoutesByMenus(e.child)
+      }
+    })
+  }
+
+  findAndAddRoutesByMenus(menus)
+
+  return hasNewRoutes
+}
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -61,6 +105,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // 防止重复登录
+
   if (token && to.path == '/login') {
     toast('请勿重复登录', 'error')
     return next({ path: from.path ? from.path : '/' })
@@ -68,15 +113,23 @@ router.beforeEach(async (to, from, next) => {
 
   // 如果用户登录了，自动获取用户信息
   const managerStore = useManagerStore()
-  if (token && !managerStore.user) {
-    managerStore.getInfoAction()
+  let hasNewRoutes = false
+  if (token) {
+    await managerStore.getInfoAction().finally(() => {
+      hasNewRoutes = addRoutes(managerStore.menus)
+    })
   }
 
   // 设置页面标题
   const title = (to.meta.title ? to.meta.title : '') + '-商城后台'
   document.title = title
 
-  next()
+  // console.log(managerStore.user)
+  // console.log('hasNewRoutes?', hasNewRoutes)
+  // console.log('router', router.getRoutes())
+
+  // 防止死循环
+  hasNewRoutes ? next(to.fullPath) : next()
 })
 
 // 全局后置守卫

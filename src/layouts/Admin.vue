@@ -2,6 +2,9 @@
 import FHeader from './components/FHeader.vue'
 import FMenu from './components/FMenu.vue'
 import FTagList from './components/FTagList.vue'
+import { useManagerStore } from '@/stores/manager'
+
+const managerStore = useManagerStore()
 </script>
 
 <template>
@@ -10,7 +13,7 @@ import FTagList from './components/FTagList.vue'
       <f-header />
     </el-header>
     <el-container>
-      <el-aside>
+      <el-aside class="transition-all" :width="managerStore.getAsideWidth">
         <f-menu></f-menu>
       </el-aside>
       <el-main>
@@ -20,3 +23,5 @@ import FTagList from './components/FTagList.vue'
     </el-container>
   </el-container>
 </template>
+
+<style scoped></style>

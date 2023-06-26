@@ -3,11 +3,11 @@
 </script>
 
 <template>
-  <div class="Register">
-    <h2>Register</h2>
+  <div class="CategoryList">
+    <h2>CategoryList</h2>
   </div>
 </template>
 
-<style lang="" scoped>
+<style scoped>
   
 </style>
