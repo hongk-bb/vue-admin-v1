@@ -1,7 +1,7 @@
 let BASE_URL = ''
 if (import.meta.env.PROD) {
   // 生产环境
-  BASE_URL = '/api'
+  BASE_URL = 'http://ceshi13.dishait.cn/'
 } else {
   // 开发环境
   BASE_URL = '/api'

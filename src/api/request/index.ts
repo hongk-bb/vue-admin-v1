@@ -64,13 +64,18 @@ class _Request {
       this.instance
         .request<any, T>(config)
         .then(res => {
-          // 单词响应的成功拦截处理
+          // console.log('request then:', res)
+          // 单次响应的成功拦截处理
           if (config.interceptors?.responseSuccessFn) {
             res = config.interceptors.responseSuccessFn(res)
           }
-          resolve(res)
+          // @ts-ignore
+          if (res?.code === 'ERR_BAD_REQUEST') {
+            reject(res)
+          } else resolve(res)
         })
         .catch(err => {
+          // console.log('request catch:', err)
           reject(err)
         })
     })
