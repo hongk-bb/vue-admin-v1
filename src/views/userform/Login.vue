@@ -2,7 +2,7 @@
 import { onMounted, onUnmounted, reactive, ref } from 'vue'
 import { type FormInstance, type FormRules } from 'element-plus'
 import { useManagerStore } from '@/stores/manager'
-import { toast } from '@/utils/toast'
+import { toast } from '@/utils/util'
 import router from '@/router'
 
 const ruleFormRef = ref<FormInstance>()
@@ -137,3 +137,4 @@ onUnmounted(() => {
   @apply flex justify-center items-center;
 }
 </style>
+@/utils/util

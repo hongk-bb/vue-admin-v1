@@ -5,3 +5,8 @@
 body {
   background-color: var(--el-bg-color-page);
 }
+
+#nprogress .bar {
+  background-color: #f4f4f4 !important;
+  height: 3px !important;
+}

@@ -2,7 +2,7 @@ import { LOGIN_TOKEN } from '@/global/constants'
 import { localCache } from '@/utils/cache'
 import { ElNotification } from 'element-plus'
 import axios from 'axios'
-import { toast } from '@/utils/toast'
+import { toast } from '@/utils/util'
 
 const service = axios.create({
   baseURL: '/api'

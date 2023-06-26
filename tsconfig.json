@@ -10,6 +10,8 @@
   ],
   "compilerOptions": {
     "types": ["element-plus/global"],
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "allowJs": true
   }
 }
