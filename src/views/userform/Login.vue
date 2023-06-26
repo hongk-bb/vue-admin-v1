@@ -1,57 +1,52 @@
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
-import { ElNotification, type FormInstance, type FormRules } from 'element-plus'
-import { login } from '@/api/manager'
+import { onMounted, onUnmounted, reactive, ref } from 'vue'
+import { type FormInstance, type FormRules } from 'element-plus'
 import { useManagerStore } from '@/stores/manager'
+import { toast } from '@/utils/toast'
+import router from '@/router'
 
 const ruleFormRef = ref<FormInstance>()
-
+const loading = ref(false)
 const checkUsername = (rule: any, value: any, callback: any) => {
   if (!value) {
     return callback(new Error('请输入用户名'))
   }
   callback()
 }
-
 const validatePassword = (rule: any, value: any, callback: any) => {
   if (value === '') {
     callback(new Error('请输入密码'))
   }
   callback()
 }
-
 const ruleForm = reactive({
   username: '',
   password: ''
 })
-
 const rules = reactive<FormRules<typeof ruleForm>>({
   username: [{ validator: checkUsername, trigger: 'blur' }],
   password: [{ validator: validatePassword, trigger: 'blur' }]
 })
 
 const managerStore = useManagerStore()
-
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate(valid => {
     if (valid) {
-      console.log(ruleForm)
+      loading.value = true
+      // console.log(ruleForm)
       managerStore
-        .loginAtion(ruleForm)
+        .loginAction(ruleForm)
         .then(res => {
           // console.log('res', res)
-          ElNotification({
-            message: '登录成功',
-            type: 'success'
+          toast('登录成功')
+
+          managerStore.getInfoAction().then(() => {
+            router.push('/')
           })
         })
-        .catch(err => {
-          // console.log('err', err)
-          ElNotification({
-            message: err?.response?.data?.msg || '请求失败',
-            type: 'error'
-          })
+        .finally(() => {
+          loading.value = false
         })
     } else {
       return false
@@ -59,10 +54,18 @@ const submitForm = (formEl: FormInstance | undefined) => {
   })
 }
 
-const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  formEl.resetFields()
+// 添加键盘监听
+const keydown = (e: KeyboardEvent) => {
+  if (e.key === 'Enter') {
+    submitForm(ruleFormRef.value)
+  }
 }
+onMounted(() => {
+  window.addEventListener('keydown', keydown)
+})
+onUnmounted(() => {
+  window.removeEventListener('keydown', keydown)
+})
 </script>
 
 <template>
@@ -113,11 +116,16 @@ const resetForm = (formEl: FormInstance | undefined) => {
             </template>
           </el-input>
         </el-form-item>
-        <el-form-item class="flex_center">
-          <el-button type="primary" @click="submitForm(ruleFormRef)"
-            >登录</el-button
+        <el-form-item>
+          <el-button
+            round
+            color="#3B82F6"
+            class="w-[250px]"
+            type="primary"
+            @click="submitForm(ruleFormRef)"
+            :loading="loading"
+            >登 录</el-button
           >
-          <el-button @click="resetForm(ruleFormRef)">重置</el-button>
         </el-form-item>
       </el-form>
     </el-col>

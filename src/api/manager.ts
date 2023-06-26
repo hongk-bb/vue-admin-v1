@@ -1,9 +1,10 @@
 import type { IAccount } from '@/types'
-import fyRequest from '.'
+import service from '.'
 
-export function login(data: IAccount) {
-  return fyRequest.post({
-    url: '/admin/login',
-    data,
-  })
+export function login(data: IAccount): any {
+  return service.post('/admin/login', data)
+}
+
+export function getinfo(): any {
+  return service.post('/admin/getinfo')
 }
