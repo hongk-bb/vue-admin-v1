@@ -1,9 +1,23 @@
 <script lang="ts" setup>
-import { useManagerStore } from '@/stores/manager'
-import { storeToRefs } from 'pinia'
+import { useFullscreen } from '@vueuse/core'
+import FormDrawer from '@/components/FormDrawer.vue'
+import { useRepassword, useLogout } from '@/hooks/useManager'
 
-const managerStore = useManagerStore()
-const { user } = storeToRefs(managerStore)
+const {
+  // 是否全屏状态
+  isFullscreen,
+  // 切换全屏
+  toggle
+} = useFullscreen()
+
+const { form, rules, formRef, formDrawerRef, onSubmit, rePassword, user } =
+  useRepassword()
+
+const { logout } = useLogout()
+
+const handleRefresh = () => {
+  location.reload()
+}
 </script>
 
 <template>
@@ -13,9 +27,17 @@ const { user } = storeToRefs(managerStore)
       商城后台
     </span>
     <el-icon class="icon-btn"><fold /></el-icon>
-    <el-icon class="icon-btn"><refresh /></el-icon>
+    <el-tooltip effect="dark" content="刷新" placement="bottom">
+      <el-icon class="icon-btn" @click="handleRefresh"><refresh /></el-icon>
+    </el-tooltip>
     <div class="ml-auto flex items-center">
-      <el-icon class="icon-btn"><full-screen /></el-icon>
+      <el-tooltip effect="dark" content="全屏" placement="bottom">
+        <el-icon class="icon-btn" @click="toggle">
+          <full-screen v-if="!isFullscreen" />
+          <aim v-else />
+        </el-icon>
+      </el-tooltip>
+
       <el-dropdown class="dropdown">
         <span class="flex items-center text-gray-100">
           <el-avatar class="mr-2" :size="25" :src="user?.avatar" />
@@ -26,13 +48,51 @@ const { user } = storeToRefs(managerStore)
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>修改密码</el-dropdown-item>
-            <el-dropdown-item>退出登录</el-dropdown-item>
+            <el-dropdown-item @click="rePassword">修改密码</el-dropdown-item>
+            <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
     </div>
   </div>
+
+  <form-drawer
+    ref="formDrawerRef"
+    title="修改密码"
+    destroyOnClose
+    @submit="onSubmit(formRef)"
+  >
+    <el-form
+      ref="formRef"
+      :rules="rules"
+      :model="form"
+      label-width="80px"
+      size="medium"
+    >
+      <el-form-item prop="oldpassword" label="旧密码">
+        <el-input
+          v-model="form.oldpassword"
+          placeholder="请输入旧密码"
+        ></el-input>
+      </el-form-item>
+      <el-form-item prop="password" label="新密码">
+        <el-input
+          type="password"
+          v-model="form.password"
+          placeholder="请输入密码"
+          show-password
+        ></el-input>
+      </el-form-item>
+      <el-form-item prop="repassword" label="确认密码">
+        <el-input
+          type="password"
+          v-model="form.repassword"
+          placeholder="请输入确认密码"
+          show-password
+        ></el-input>
+      </el-form-item>
+    </el-form>
+  </form-drawer>
 </template>
 
 <style scoped>

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { getinfo, login, logout } from '@/api/manager'
-import type { IAccount } from '@/types'
+import { getinfo, login, logout, updatepassword } from '@/api/manager'
+import type { IAccount, IRepassAccount } from '@/types'
 import { localCache } from '@/utils/cache'
 import { LOGIN_TOKEN } from '@/global/constants'
 
@@ -21,6 +21,9 @@ export const useManagerStore = defineStore('manager', {
     async logoutAction() {
       await logout()
       localCache.removeCache(LOGIN_TOKEN)
+    },
+    async updatepasswordAction(data: IRepassAccount) {
+      await updatepassword(data)
     }
   }
 })

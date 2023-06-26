@@ -3,6 +3,7 @@ import { localCache } from '@/utils/cache'
 import { ElNotification } from 'element-plus'
 import axios from 'axios'
 import { toast } from '@/utils/util'
+import { useManagerStore } from '@/stores/manager'
 
 const service = axios.create({
   baseURL: '/api'
@@ -33,7 +34,18 @@ service.interceptors.response.use(
   },
   function (error) {
     // 对响应错误做点什么
-    toast(error.response.data.msg || '请求失败', 'error')
+    let msg = error.response.data.msg || '请求失败'
+
+    if (msg.length > 10) {
+      return Promise.resolve(error)
+    }
+
+    if (msg == '非法token，请先登录！') {
+      const managerStore = useManagerStore()
+      managerStore.logoutAction().finally(() => location.reload())
+    }
+
+    toast(msg, 'error')
 
     return Promise.reject(error)
   }

@@ -1,4 +1,4 @@
-import type { IAccount } from '@/types'
+import type { IAccount, IRepassAccount } from '@/types'
 import service from '.'
 
 export function login(data: IAccount): any {
@@ -11,4 +11,8 @@ export function getinfo() {
 
 export function logout() {
   return service.post('/admin/logout')
+}
+
+export function updatepassword(data: IRepassAccount) {
+  return service.post('/admin/updatepassword', data)
 }
