@@ -67,7 +67,7 @@ const handleSelect = (path: string) => {
 
 <style scoped>
 .f-menu {
-  @apply shadow-md fixed bg-gray-100 transition-all overflow-x-hidden overflow-y-auto left-0 bottom-0;
+  @apply shadow-sm fixed bg-gray-100 transition-all overflow-x-hidden overflow-y-auto left-0 bottom-0;
   top: 64px;
 }
 
