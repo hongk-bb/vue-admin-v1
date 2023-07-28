@@ -90,6 +90,7 @@ const router = createRouter({
 })
 
 // 全局前置守卫
+let hasGetInfo = false
 router.beforeEach(async (to, from, next) => {
   // console.log('to, from', to, from)
 
@@ -114,10 +115,15 @@ router.beforeEach(async (to, from, next) => {
   // 如果用户登录了，自动获取用户信息
   const managerStore = useManagerStore()
   let hasNewRoutes = false
-  if (token) {
-    await managerStore.getInfoAction().finally(() => {
-      hasNewRoutes = addRoutes(managerStore.menus)
-    })
+  if (token && !hasGetInfo) {
+    await managerStore
+      .getInfoAction()
+      .then(() => {
+        hasGetInfo = true
+      })
+      .finally(() => {
+        hasNewRoutes = addRoutes(managerStore.menus)
+      })
   }
 
   // 设置页面标题

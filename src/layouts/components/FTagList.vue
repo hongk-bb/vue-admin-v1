@@ -1,74 +1,9 @@
 <script lang="ts" setup>
+import { useTabList } from '@/hooks/useTabList'
 import { useManagerStore } from '@/stores/manager'
-import { localCache } from '@/utils/cache'
-import { ref } from 'vue'
-import { useRoute, onBeforeRouteUpdate } from 'vue-router'
-import router from '@/router'
-import { TAB_LIST } from '@/global/constants'
-
-const route = useRoute()
 const managerStore = useManagerStore()
 
-const activeTab = ref(route.path)
-const tabList = ref([
-  {
-    title: '后台首页',
-    path: '/'
-  }
-])
-
-// 添加标签导航
-function addTab(tab: any) {
-  let noTab = tabList.value.findIndex(t => t.path == tab.path) == -1
-  if (noTab) {
-    tabList.value.push(tab)
-  }
-
-  localCache.setCache(TAB_LIST, tabList.value)
-}
-
-// 初始化标签导航列表
-function initTabList() {
-  let tbs = localCache.getCache(TAB_LIST)
-  if (tbs) {
-    tabList.value = tbs
-  }
-}
-
-initTabList()
-
-onBeforeRouteUpdate(to => {
-  activeTab.value = to.path
-  addTab({
-    title: to.meta.title,
-    path: to.path
-  })
-})
-
-const changeTab = (t: string) => {
-  activeTab.value = t
-  router.push(t)
-}
-
-const removeTab = (t: string) => {
-  let tabs = tabList.value
-  let a = activeTab.value
-  if (a == t) {
-    tabs.forEach((tab, index) => {
-      if (tab.path == t) {
-        const nextTab = tabs[index + 1] || tabs[index - 1]
-        if (nextTab) {
-          a = nextTab.path
-        }
-      }
-    })
-  }
-
-  activeTab.value = a
-  tabList.value = tabList.value.filter(tab => tab.path != t)
-
-  localCache.setCache(TAB_LIST, tabList.value)
-}
+const { tabList, activeTab, removeTab, changeTab, handleClose } = useTabList()
 </script>
 
 <template>
@@ -91,7 +26,7 @@ const removeTab = (t: string) => {
     </el-tabs>
 
     <span class="tag-btn">
-      <el-dropdown>
+      <el-dropdown @command="handleClose">
         <span class="el-dropdown-link">
           <el-icon>
             <arrow-down />
@@ -99,11 +34,8 @@ const removeTab = (t: string) => {
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>Action 1</el-dropdown-item>
-            <el-dropdown-item>Action 2</el-dropdown-item>
-            <el-dropdown-item>Action 3</el-dropdown-item>
-            <el-dropdown-item disabled>Action 4</el-dropdown-item>
-            <el-dropdown-item divided>Action 5</el-dropdown-item>
+            <el-dropdown-item command="clearOther">关闭其他</el-dropdown-item>
+            <el-dropdown-item command="clearAll">全部关闭</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>

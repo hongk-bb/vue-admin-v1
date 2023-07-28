@@ -1,5 +1,5 @@
 import type { IAccount, IRepassAccount } from '@/types'
-import service from '.'
+import service from './axios'
 
 export function login(data: IAccount): any {
   return service.post('/admin/login', data)
