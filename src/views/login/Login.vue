@@ -137,4 +137,3 @@ onUnmounted(() => {
   @apply flex justify-center items-center;
 }
 </style>
-@/utils/util @/stores @/stores
