@@ -9,7 +9,7 @@ export const useManagerStore = defineStore('manager', {
     user: null as any,
     asideCollapsed: false,
     menus: [] as any[],
-    ruleNames: []
+    ruleNames: [] as any[]
   }),
   getters: {
     getAsideWidth(state) {

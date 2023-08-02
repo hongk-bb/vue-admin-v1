@@ -1,12 +1,12 @@
 import { LOGIN_TOKEN } from '@/global/constants'
 import { localCache } from '@/utils/cache'
-import { ElNotification } from 'element-plus'
 import axios from 'axios'
 import { toast } from '@/utils/util'
 import { useManagerStore } from '@/stores/manager'
 
 const service = axios.create({
-  baseURL: '/api'
+  // baseURL: '/api'
+  baseURL: 'http://ceshi13.dishait.cn'
 })
 
 // 添加请求拦截器

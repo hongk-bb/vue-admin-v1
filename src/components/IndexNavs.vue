@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import router from '@/router'
+
 const iconNavs = [
   {
     icon: 'user',
@@ -59,7 +61,7 @@ const iconNavs = [
       v-for="(item, index) in iconNavs"
       :key="index"
     >
-      <el-card shadow="hover" @click="$router.push(item.path)">
+      <el-card shadow="hover" @click="router.push(item.path)">
         <div class="flex flex-col items-center justify-center cursor-pointer">
           <el-icon :size="16">
             <component :is="item.icon" :class="item.color" />

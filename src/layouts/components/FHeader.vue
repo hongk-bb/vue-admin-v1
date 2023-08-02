@@ -110,6 +110,7 @@ const handleRefresh = () => {
 .f-header {
   @apply flex items-center bg-blue-600 text-white fixed top-0 left-0 right-0;
   height: 64px;
+  z-index: 100;
 }
 
 .logo {
