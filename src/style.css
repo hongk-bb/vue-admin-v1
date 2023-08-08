@@ -3,24 +3,42 @@
 @tailwind utilities;
 
 body {
-  background-color: var(--el-bg-color-page);
+  background-color: var(--el-bg-color-page); /* 设置页面背景颜色 */
 }
 
 #nprogress .bar {
-  background-color: #f4f4f4 !important;
-  height: 3px !important;
+  background-color: #f4f4f4 !important; /* 设置进度条背景颜色 */
+  height: 3px !important; /* 设置进度条高度 */
 }
 
 #nprogress .spinner {
-  top: auto !important;
-  bottom: 15px !important;
+  top: auto !important; /* 设置自动位置 */
+  bottom: 15px !important; /* 设置底部距离 */
 }
 
 #nprogress .spinner-icon {
-  width: 32px !important;
-  height: 32px !important;
+  width: 32px !important; /* 设置自旋图标宽度 */
+  height: 32px !important; /* 设置自旋图标高度 */
 }
 
 :focus-visible {
-  outline: none;
+  outline: none; /* 移除获取焦点时的外边框 */
+}
+
+::-webkit-scrollbar {
+  width: 4px; /* 设置滚动条宽度 */
+  height: 6px; /* 设置滚动条高度 */
+}
+::-webkit-scrollbar-corner {
+  display: block; /* 显示滚动条角落 */
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 8px; /* 设置滚动条拇指的边框半径 */
+  background-color: rgba(0, 0, 0, 0.2); /* 设置滚动条拇指背景颜色 */
+}
+::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-track {
+  border-right-color: transparent; /* 设置滚动条轨道右边框颜色为透明 */
+  border-left-color: transparent; /* 设置滚动条轨道左边框颜色为透明 */
+  background-color: rgba(0, 0, 0, 0.1); /* 设置滚动条轨道背景颜色 */
 }
