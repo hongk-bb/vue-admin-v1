@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { useImageStore } from '@/stores/image'
-import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { showPrompt, toast } from '@/utils/util'
 
 const imageStore = useImageStore()
@@ -12,11 +11,11 @@ const openUploadFile = () => (drawer.value = true)
 
 // 分页
 const currentPage = ref(1)
+const total = ref(0)
 const limit = ref(10)
+const list = ref<any>([])
 const loading = ref(false)
 const image_class_id = ref(0)
-
-const { list, totalCount } = storeToRefs(imageStore)
 
 // 获取数据
 function getData(p: null | number = null) {
@@ -27,6 +26,13 @@ function getData(p: null | number = null) {
   loading.value = true
   imageStore
     .getImageListAction(image_class_id.value, currentPage.value)
+    .then(res => {
+      total.value = res.totalCount
+      list.value = res.list.map((o: any) => {
+        o.checked = false
+        return o
+      })
+    })
     .finally(() => {
       loading.value = false
     })
@@ -72,6 +78,24 @@ const handleDelete = (id: number) => {
 // 上传成功
 const handleUploadSuccess = () => getData(1)
 
+defineProps({
+  openChoose: {
+    type: Boolean,
+    default: false
+  }
+})
+
+// 选中的图片
+const emit = defineEmits(['choose'])
+const checkedImage = computed(() => list.value.filter((o: any) => o.checked))
+const handleChooseChange = (item: any) => {
+  if (item.checked && checkedImage.value.length > 1) {
+    item.checked = false
+    return toast(`最多只能选中1张`, 'error')
+  }
+  emit('choose', checkedImage.value)
+}
+
 defineExpose({
   loadData,
   openUploadFile
@@ -92,6 +116,7 @@ defineExpose({
             shadow="hover"
             class="relative mb-3"
             :body-style="{ padding: 0 }"
+            :class="{ 'border-blue-500': item.checked }"
           >
             <el-image
               :src="item.url"
@@ -103,6 +128,12 @@ defineExpose({
             ></el-image>
             <div class="image-title">{{ item.name }}</div>
             <div class="flex items-center justify-center p-2">
+              <el-checkbox
+                v-if="openChoose"
+                v-model="item.checked"
+                @change="handleChooseChange(item)"
+              />
+
               <el-button
                 type="primary"
                 size="small"
@@ -118,7 +149,9 @@ defineExpose({
                 @confirm="handleDelete(item.id)"
               >
                 <template #reference>
-                  <el-button type="primary" size="small" text>删除</el-button>
+                  <el-button class="!m-0" type="primary" size="small" text
+                    >删除</el-button
+                  >
                 </template>
               </el-popconfirm>
             </div>
@@ -130,7 +163,7 @@ defineExpose({
       <el-pagination
         background
         layout="prev,pager, next"
-        :total="totalCount"
+        :total="total"
         :current-page="currentPage"
         :page-size="limit"
         @current-change="getData"

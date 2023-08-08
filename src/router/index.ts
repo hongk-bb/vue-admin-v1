@@ -9,7 +9,6 @@ import Admin from '../layouts/Admin.vue'
 import Login from '../views/login/Login.vue'
 import NotFound from '../views/notfound/NotFound.vue'
 
-
 // 默认路由，所有用户共享
 const routes = [
   {
@@ -112,6 +111,14 @@ const asyncRoutes = [
     component: () => import('../views/coupon/CouponList.vue'),
     meta: {
       title: '优惠券列表'
+    }
+  },
+  {
+    path: '/manager/list',
+    name: '/manager/list',
+    component: () => import('../views/manager/ManagerList.vue'),
+    meta: {
+      title: '管理员管理'
     }
   }
 ]
