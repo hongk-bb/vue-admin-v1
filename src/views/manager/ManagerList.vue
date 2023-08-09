@@ -5,142 +5,61 @@ import { toast } from '@/utils/util'
 import { useManagerStore } from '@/stores/manager'
 const managerStore = useManagerStore()
 
-const searchForm = reactive({
-  keyword: ''
-})
-const resetSearchForm = () => {
-  searchForm.keyword = ''
-  getData()
-}
+import { useInitForm, useInitTable } from '@/hooks/useCommon'
 
 const roles = ref<any>([])
 
-const tableData = ref([])
-const loading = ref(false)
-
-// 分页
-const currentPage = ref(1)
-const total = ref(0)
-const limit = ref(10)
-
-// 获取数据
-function getData(p: any = null) {
-  if (typeof p == 'number') {
-    currentPage.value = p
-  }
-
-  loading.value = true
-  managerStore
-    .getManagerListAction(currentPage.value, searchForm)
-    .then(res => {
-      tableData.value = res.list.map((o: any) => {
-        o.statusLoading = false
-        return o
-      })
-      total.value = res.totalCount
-      roles.value = res.roles
+const {
+  searchForm,
+  resetSearchForm,
+  tableData,
+  loading,
+  currentPage,
+  total,
+  limit,
+  getData,
+  handleDelete,
+  handleStatusChange
+} = useInitTable({
+  searchForm: {
+    keyword: ''
+  },
+  getList: managerStore.getManagerListAction,
+  onGetListSuccess: (res: any) => {
+    tableData.value = res.list.map((o: any) => {
+      o.statusLoading = false
+      return o
     })
-    .finally(() => {
-      loading.value = false
-    })
-}
-
-getData()
-
-// 删除
-const handleDelete = (id: any) => {
-  loading.value = true
-  managerStore
-    .deleteManagerAction(id)
-    .then(() => {
-      toast('删除成功')
-      getData()
-    })
-    .finally(() => {
-      loading.value = false
-    })
-}
+    total.value = res.totalCount
+    roles.value = res.roles
+  },
+  delete: managerStore.deleteManagerAction,
+  updateStatus: managerStore.updateManagerStatusAction
+})
 
 // 表单部分
-const formDrawerRef = ref<any>(null)
-const formRef = ref<any>(null)
-const form = reactive<any>({
-  username: '',
-  password: '',
-  role_id: null,
-  status: 1,
-  avatar: ''
-})
-const rules = {}
-const editId = ref<any>(0)
-const drawerTitle = computed(() => (editId.value ? '修改' : '新增'))
 
-const handleSubmit = () => {
-  formRef.value.validate((valid: any) => {
-    if (!valid) return
-
-    formDrawerRef.value.showLoading()
-
-    const fun = editId.value
-      ? managerStore.updateManagerAction(editId.value, form)
-      : managerStore.createManagerAction(form)
-
-    fun
-      .then(res => {
-        toast(drawerTitle.value + '成功')
-        // 修改刷新当前页，新增刷新第一页
-        getData(editId.value ? false : 1)
-        formDrawerRef.value.close()
-      })
-      .finally(() => {
-        formDrawerRef.value.hideLoading()
-      })
-  })
-}
-
-// 重置表单
-function resetForm(row: any = false) {
-  if (formRef.value) formRef.value.clearValidate()
-  if (row) {
-    for (const key in form) {
-      form[key] = row[key]
-    }
-  }
-}
-
-// 新增
-const handleCreate = () => {
-  editId.value = 0
-  resetForm({
+const {
+  formDrawerRef,
+  formRef,
+  form,
+  rules,
+  drawerTitle,
+  handleSubmit,
+  handleCreate,
+  handleEdit
+} = useInitForm({
+  form: {
     username: '',
     password: '',
     role_id: null,
     status: 1,
     avatar: ''
-  })
-  formDrawerRef.value.open()
-}
-
-// 编辑
-const handleEdit = (row: any) => {
-  editId.value = row.id
-  resetForm(row)
-  formDrawerRef.value.open()
-}
-
-// 修改状态
-const handleStatusChange = (status: any, row: any) => {
-  row.statusLoading = true
-  managerStore
-    .updateManagerStatusAction(row.id, status)
-    .then(() => {
-      toast('修改状态成功')
-      row.status = status
-    })
-    .finally(() => {
-      row.statusLoading = false
-    })
-}
+  },
+  getData,
+  update: managerStore.updateManagerAction,
+  create: managerStore.createManagerAction
+})
 </script>
 
 <template>
@@ -295,4 +214,8 @@ const handleStatusChange = (status: any, row: any) => {
   </el-card>
 </template>
 
-<style scoped></style>
+<style scoped>
+:deep(.el-loading-mask) {
+  z-index: 10;
+}
+</style>

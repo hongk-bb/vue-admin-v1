@@ -1,124 +1,51 @@
 <script lang="ts" setup>
-import { ref, reactive, computed } from 'vue'
 import FormDrawer from '@/components/FormDrawer.vue'
-import { toast } from '@/utils/util'
 import { useNoticeStore } from '@/stores/notice'
-import { storeToRefs } from 'pinia'
+import { useInitForm, useInitTable } from '@/hooks/useCommon'
 
 const noticeStore = useNoticeStore()
 
-const loading = ref(false)
-
-// 分页
-const currentPage = ref(1)
-const limit = ref(10)
-
-const { totalCount, list } = storeToRefs(noticeStore)
-
-// 获取数据
-function getData(p: any = null) {
-  if (typeof p == 'number') {
-    currentPage.value = p
-  }
-
-  loading.value = true
-  noticeStore.getNoticeListAction(currentPage.value).finally(() => {
-    loading.value = false
+const { tableData, loading, currentPage, total, limit, getData, handleDelete } =
+  useInitTable({
+    getList: noticeStore.getNoticeListAction,
+    delete: noticeStore.deleteNoticeAction
   })
-}
-
-getData()
-
-// 删除
-const handleDelete = (id: number) => {
-  loading.value = true
-  noticeStore
-    .deleteNoticeAction(id)
-    .then(() => {
-      toast('删除成功')
-      getData()
-    })
-    .finally(() => {
-      loading.value = false
-    })
-}
 
 // 表单部分
-const formDrawerRef = ref<any>(null)
-const formRef = ref<any>(null)
-const form = reactive<any>({
-  title: '',
-  content: ''
-})
-const rules = {
-  title: [
-    {
-      required: true,
-      message: '公告标题不能为空',
-      trigger: 'blur'
-    }
-  ],
-  content: [
-    {
-      required: true,
-      message: '公告内容不能为空',
-      trigger: 'blur'
-    }
-  ]
-}
-
-const editId = ref(0)
-const drawerTitle = computed(() => (editId.value ? '修改' : '新增'))
-
-const handleSubmit = () => {
-  formRef.value.validate((valid: any) => {
-    if (!valid) return
-
-    formDrawerRef.value.showLoading()
-
-    const fun = editId.value
-      ? noticeStore.updateNoticeAction(editId.value, form)
-      : noticeStore.createNoticeAction(form)
-
-    fun
-      .then(() => {
-        toast(drawerTitle.value + '成功')
-        // 修改刷新当前页，新增刷新第一页
-        getData(editId.value ? false : 1)
-        formDrawerRef.value.close()
-      })
-      .finally(() => {
-        formDrawerRef.value.hideLoading()
-      })
-  })
-}
-
-// 重置表单
-function resetForm(row: any = false) {
-  if (formRef.value) formRef.value.clearValidate()
-  if (row) {
-    for (const key in form) {
-      form[key] = row[key]
-    }
-  }
-}
-
-// 新增
-const handleCreate = () => {
-  editId.value = 0
-  resetForm({
+const {
+  formDrawerRef,
+  formRef,
+  form,
+  rules,
+  drawerTitle,
+  handleSubmit,
+  handleCreate,
+  handleEdit
+} = useInitForm({
+  form: {
     title: '',
     content: ''
-  })
-  formDrawerRef.value.open()
-}
-
-// 编辑
-const handleEdit = (row: any) => {
-  editId.value = row.id
-  resetForm(row)
-  formDrawerRef.value.open()
-}
+  },
+  rules: {
+    title: [
+      {
+        required: true,
+        message: '公告标题不能为空',
+        trigger: 'blur'
+      }
+    ],
+    content: [
+      {
+        required: true,
+        message: '公告内容不能为空',
+        trigger: 'blur'
+      }
+    ]
+  },
+  getData,
+  update: noticeStore.updateNoticeAction,
+  create: noticeStore.createNoticeAction
+})
 </script>
 
 <template>
@@ -137,7 +64,7 @@ const handleEdit = (row: any) => {
       </el-tooltip>
     </div>
 
-    <el-table :data="list" stripe style="width: 100%" v-loading="loading">
+    <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
       <el-table-column prop="title" label="公告标题" />
       <el-table-column prop="create_time" label="发布时间" width="380" />
       <el-table-column label="操作" width="180" align="center">
@@ -168,7 +95,7 @@ const handleEdit = (row: any) => {
       <el-pagination
         background
         layout="prev, pager ,next"
-        :total="totalCount"
+        :total="total"
         :current-page="currentPage"
         :page-size="limit"
         @current-change="getData"

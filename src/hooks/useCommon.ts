@@ -1,0 +1,159 @@
+import { ref, reactive, computed } from 'vue'
+import { toast } from '@/utils/util'
+
+export function useInitTable(opt: any = {}) {
+  let searchForm: any = null
+  let resetSearchForm = null
+  if (opt.searchForm) {
+    searchForm = reactive({ ...opt.searchForm })
+    resetSearchForm = () => {
+      for (const key in opt.searchForm) {
+        searchForm[key] = opt.searchForm[key]
+      }
+      getData()
+    }
+  }
+
+  const tableData = ref([])
+  const loading = ref(false)
+
+  // 分页
+  const currentPage = ref(1)
+  const total = ref(0)
+  const limit = ref(10)
+
+  // 获取数据
+  function getData(p: any = null) {
+    if (typeof p == 'number') {
+      currentPage.value = p
+    }
+
+    loading.value = true
+    opt
+      .getList(currentPage.value, searchForm)
+      .then((res: any) => {
+        if (opt.onGetListSuccess && typeof opt.onGetListSuccess == 'function') {
+          opt.onGetListSuccess(res)
+        } else {
+          tableData.value = res.list
+          total.value = res.totalCount
+        }
+      })
+      .finally(() => {
+        loading.value = false
+      })
+  }
+
+  getData()
+
+  // 删除
+  const handleDelete = (id: number) => {
+    loading.value = true
+    opt
+      .delete(id)
+      .then(() => {
+        toast('删除成功')
+        getData()
+      })
+      .finally(() => {
+        loading.value = false
+      })
+  }
+
+  // 修改状态
+  const handleStatusChange = (status: any, row: any) => {
+    row.statusLoading = true
+    opt
+      .updateStatus(row.id, status)
+      .then(() => {
+        toast('修改状态成功')
+        row.status = status
+      })
+      .finally(() => {
+        row.statusLoading = false
+      })
+  }
+
+  return {
+    searchForm,
+    resetSearchForm,
+    tableData,
+    loading,
+    currentPage,
+    total,
+    limit,
+    getData,
+    handleDelete,
+    handleStatusChange
+  }
+}
+
+// 新增，修改
+export function useInitForm(opt: any = {}) {
+  // 表单部分
+  const formDrawerRef = ref<any>(null)
+  const formRef = ref<any>(null)
+  const defaultForm = opt.form
+  const form = reactive<any>({})
+  const rules = opt.rules || {}
+  const editId = ref(0)
+  const drawerTitle: any = computed(() => (editId.value ? '修改' : '新增'))
+
+  const handleSubmit = () => {
+    formRef.value.validate((valid: any) => {
+      if (!valid) return
+
+      formDrawerRef.value.showLoading()
+
+      const fun = editId.value
+        ? opt.update(editId.value, form)
+        : opt.create(form)
+
+      fun
+        .then(() => {
+          toast(drawerTitle.value + '成功')
+          // 修改刷新当前页，新增刷新第一页
+          opt.getData(editId.value ? false : 1)
+          formDrawerRef.value.close()
+        })
+        .finally(() => {
+          formDrawerRef.value.hideLoading()
+        })
+    })
+  }
+
+  // 重置表单
+  function resetForm(row: any = false) {
+    if (formRef.value) formRef.value.clearValidate()
+    for (const key in defaultForm) {
+      form[key] = row[key]
+    }
+  }
+
+  // 新增
+  const handleCreate = () => {
+    editId.value = 0
+    resetForm(defaultForm)
+    formDrawerRef.value.open()
+  }
+
+  // 编辑
+  const handleEdit = (row: any) => {
+    editId.value = row.id
+    resetForm(row)
+    formDrawerRef.value.open()
+  }
+
+  return {
+    formDrawerRef,
+    formRef,
+    form,
+    rules,
+    editId,
+    drawerTitle,
+    handleSubmit,
+    resetForm,
+    handleCreate,
+    handleEdit
+  }
+}
