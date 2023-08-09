@@ -3,16 +3,16 @@ import router from '@/router'
 import { useManagerStore } from '@/stores/manager'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
+import { onBeforeRouteUpdate } from 'vue-router'
 
+// 默认选中
 const defaultActive = ref(router.currentRoute.value.path)
-const managerStore = useManagerStore()
+// 监听路由变化
+onBeforeRouteUpdate((to, from) => {
+  defaultActive.value = to.path
+})
 
-interface MenuItem {
-  name: string
-  icon: string
-  frontpath?: string
-  child?: MenuItem[]
-}
+const managerStore = useManagerStore()
 
 const { menus } = storeToRefs(managerStore)
 
