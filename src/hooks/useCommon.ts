@@ -100,6 +100,8 @@ export function useInitForm(opt: any = {}) {
   const drawerTitle: any = computed(() => (editId.value ? '修改' : '新增'))
 
   const handleSubmit = () => {
+    // console.log('form', form)
+    // console.log('opt.form', opt.form)
     formRef.value.validate((valid: any) => {
       if (!valid) return
 

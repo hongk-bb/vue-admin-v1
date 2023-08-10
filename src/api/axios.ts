@@ -5,8 +5,8 @@ import { toast } from '@/utils/util'
 import { useManagerStore } from '@/stores/manager'
 
 const service = axios.create({
-  // baseURL: '/api'
-  baseURL: 'http://ceshi13.dishait.cn'
+  baseURL: '/api'
+  // baseURL: 'http://ceshi13.dishait.cn'
 })
 
 // 添加请求拦截器
@@ -34,7 +34,7 @@ service.interceptors.response.use(
   },
   function (error) {
     // 对响应错误做点什么
-    let msg = error.response.data.msg || '请求失败'
+    let msg = error?.response?.data?.msg || '请求失败'
 
     if (msg.length > 10) {
       return Promise.resolve(error)
