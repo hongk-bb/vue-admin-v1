@@ -136,6 +136,14 @@ const asyncRoutes = [
     meta: {
       title: '角色管理'
     }
+  },
+  {
+    path: '/skus/list',
+    name: '/skus/list',
+    component: () => import('../views/skus/SkusList.vue'),
+    meta: {
+      title: '规格管理'
+    }
   }
 ]
 

@@ -74,6 +74,7 @@ declare module 'vue' {
     ListHeader: typeof import('./src/components/ListHeader.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TagInput: typeof import('./src/components/TagInput.vue')['default']
     TheWelcome: typeof import('./src/components/TheWelcome.vue')['default']
     UploadFile: typeof import('./src/components/UploadFile.vue')['default']
     WelcomeItem: typeof import('./src/components/WelcomeItem.vue')['default']
