@@ -36,7 +36,7 @@ service.interceptors.response.use(
     // 对响应错误做点什么
     let msg = error?.response?.data?.msg || '请求失败'
 
-    if (msg.length > 10) {
+    if (msg.length > 10 || msg.includes('禁止') || msg.includes('站点')) {
       return Promise.resolve(error)
     }
 

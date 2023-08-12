@@ -127,16 +127,21 @@ export function useInitForm(opt: any = {}) {
   const drawerTitle: any = computed(() => (editId.value ? '修改' : '新增'))
 
   const handleSubmit = () => {
-    // console.log('form', form)
-    // console.log('opt.form', opt.form)
     formRef.value.validate((valid: any) => {
       if (!valid) return
 
       formDrawerRef.value.showLoading()
 
+      let body = {}
+      if (opt.beforeSubmit && typeof opt.beforeSubmit == 'function') {
+        body = opt.beforeSubmit({ ...form })
+      } else {
+        body = form
+      }
+
       const fun = editId.value
-        ? opt.update(editId.value, form)
-        : opt.create(form)
+        ? opt.update(editId.value, body)
+        : opt.create(body)
 
       fun
         .then(() => {

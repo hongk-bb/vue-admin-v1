@@ -203,8 +203,4 @@ const {
   </el-card>
 </template>
 
-<style scoped>
-:deep(.el-loading-mask) {
-  z-index: 10;
-}
-</style>
+<style scoped></style>

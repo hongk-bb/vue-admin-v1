@@ -42,3 +42,8 @@ body {
   border-left-color: transparent; /* 设置滚动条轨道左边框颜色为透明 */
   background-color: rgba(0, 0, 0, 0.1); /* 设置滚动条轨道背景颜色 */
 }
+
+/* 修复elementplus-loading样式被遮挡 */
+.el-loading-mask {
+  z-index: 10 !important;
+}
