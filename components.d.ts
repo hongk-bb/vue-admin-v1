@@ -10,6 +10,7 @@ declare module 'vue' {
     AsideList: typeof import('./src/components/AsideList.vue')['default']
     ChooseImage: typeof import('./src/components/ChooseImage.vue')['default']
     CountTo: typeof import('./src/components/CountTo.vue')['default']
+    Editor: typeof import('./src/components/Editor.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElButton: typeof import('element-plus/es')['ElButton']
