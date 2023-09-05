@@ -21,8 +21,16 @@ export function updateGoods(id: number, data: any) {
   return service.post(`/admin/goods/${id}`, data)
 }
 
-export function deleteGoods(ids: number) {
+export function deleteGoods(ids: any) {
   return service.post(`/admin/goods/delete_all`, {
     ids
   })
+}
+
+export function readGoods(id: number) {
+  return service.get(`/admin/goods/read/${id}`)
+}
+
+export function setGoodsBanner(id: number, data: any) {
+  return service.post(`/admin/goods/banners/${id}`, data)
 }

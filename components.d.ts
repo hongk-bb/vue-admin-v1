@@ -75,6 +75,8 @@ declare module 'vue' {
     ListHeader: typeof import('./src/components/ListHeader.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Search: typeof import('./src/components/Search.vue')['default']
+    SearchItem: typeof import('./src/components/SearchItem.vue')['default']
     TagInput: typeof import('./src/components/TagInput.vue')['default']
     TheWelcome: typeof import('./src/components/TheWelcome.vue')['default']
     UploadFile: typeof import('./src/components/UploadFile.vue')['default']

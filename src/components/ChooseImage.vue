@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import ImageAside from './ImageAside.vue'
 import ImageMain from './ImageMain.vue'
+import { toast } from '@/utils/util'
 
 const dialogVisible = ref(false)
 
@@ -18,7 +19,11 @@ const handleAsideChange = (image_class_id: number) =>
 const handleOpenUpload = () => ImageMainRef.value.openUploadFile()
 
 const props = defineProps({
-  modelValue: [String, Array]
+  modelValue: [String, Array] as any,
+  limit: {
+    type: Number,
+    default: 1
+  }
 })
 const emit = defineEmits(['update:modelValue'])
 
@@ -28,20 +33,50 @@ const handleChoose = (e: any) => {
 }
 
 const submit = () => {
-  if (urls.length) {
-    emit('update:modelValue', urls[0])
+  let value = []
+  if (props.limit == 1) {
+    value = urls[0]
+  } else {
+    value = [...props.modelValue, ...urls]
+    if (value.length > props.limit) {
+      return toast(
+        '最多还能选择' + (props.limit - props.modelValue.length) + '张'
+      )
+    }
+  }
+  if (value) {
+    emit('update:modelValue', value)
   }
   close()
+}
+
+const removeImage = (url: any) => {
+  emit(
+    'update:modelValue',
+    props.modelValue.filter((u: any) => u !== url)
+  )
 }
 </script>
 
 <template>
   <div v-if="modelValue">
     <el-image
+      v-if="typeof modelValue == 'string'"
       :src="modelValue"
       fit="cover"
       class="w-[100px] h-[100px] rounded border mr-2"
     ></el-image>
+    <div v-else class="flex flex-wrap">
+      <div class="img-box" v-for="(url, index) in modelValue" :key="index">
+        <el-icon
+          class="img-icon"
+          style="z-index: 1000"
+          @click="removeImage(url)"
+          ><CircleClose
+        /></el-icon>
+        <el-image :src="url" fit="cover" class="img-image"></el-image>
+      </div>
+    </div>
   </div>
 
   <div class="choose-image-btn" @click="open">
@@ -59,7 +94,12 @@ const submit = () => {
       </el-header>
       <el-container>
         <ImageAside ref="ImageAsideRef" @change="handleAsideChange" />
-        <ImageMain openChoose ref="ImageMainRef" @choose="handleChoose" />
+        <ImageMain
+          :limit="limit"
+          openChoose
+          ref="ImageMainRef"
+          @choose="handleChoose"
+        />
       </el-container>
     </el-container>
 
@@ -79,5 +119,17 @@ const submit = () => {
 }
 .choose-image-btn {
   @apply w-[100px] h-[100px] rounded border flex justify-center items-center cursor-pointer hover:bg-gray-100;
+}
+
+.img-box {
+  @apply relative mx-1 mb-2 w-[100px] h-[100px];
+}
+
+.img-box .img-icon {
+  @apply absolute right-[5px] top-[5px] cursor-pointer bg-white rounded-full;
+}
+
+.img-box .img-image {
+  @apply w-[100px] h-[100px] rounded border mr-2;
 }
 </style>

@@ -3,7 +3,7 @@ import { toast } from '@/utils/util'
 
 export function useInitTable(opt: any = {}) {
   let searchForm: any = null
-  let resetSearchForm = null
+  let resetSearchForm: any = null
   if (opt.searchForm) {
     searchForm = reactive({ ...opt.searchForm })
     resetSearchForm = () => {
@@ -79,6 +79,7 @@ export function useInitTable(opt: any = {}) {
   const handleSelectionChange = (e: any) => {
     multiSelectionIds.value = e.map((o: any) => o.id)
   }
+  
   // 批量删除
   const multipleTableRef = ref<any>(null)
   const handleMultiDelete = () => {
@@ -87,6 +88,24 @@ export function useInitTable(opt: any = {}) {
       .delete(multiSelectionIds.value)
       .then(() => {
         toast('删除成功')
+        // 清空选中
+        if (multipleTableRef.value) {
+          multipleTableRef.value.clearSelection()
+        }
+        getData()
+      })
+      .finally(() => {
+        loading.value = false
+      })
+  }
+
+  // 批量修改状态
+  const handleMultiStatusChange = (status: any) => {
+    loading.value = true
+    opt
+      .updateStatus(multiSelectionIds.value, status)
+      .then((res: any) => {
+        toast('修改状态成功')
         // 清空选中
         if (multipleTableRef.value) {
           multipleTableRef.value.clearSelection()
@@ -111,7 +130,8 @@ export function useInitTable(opt: any = {}) {
     handleStatusChange,
     handleSelectionChange,
     multipleTableRef,
-    handleMultiDelete
+    handleMultiDelete,
+    handleMultiStatusChange
   }
 }
 
