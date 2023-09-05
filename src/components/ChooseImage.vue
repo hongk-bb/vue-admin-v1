@@ -4,9 +4,13 @@ import ImageAside from './ImageAside.vue'
 import ImageMain from './ImageMain.vue'
 import { toast } from '@/utils/util'
 
-const dialogVisible = ref(false)
+const dialogVisible = ref<any>(false)
 
-const open = () => (dialogVisible.value = true)
+const callbackFunction = ref<any>(null)
+const open = (callback: any = null) => {
+  callbackFunction.value = callback
+  dialogVisible.value = true
+}
 const close = () => (dialogVisible.value = false)
 
 const ImageAsideRef = ref<any>(null)
@@ -23,6 +27,10 @@ const props = defineProps({
   limit: {
     type: Number,
     default: 1
+  },
+  preview: {
+    type: Boolean,
+    default: true
   }
 })
 const emit = defineEmits(['update:modelValue'])
@@ -37,15 +45,19 @@ const submit = () => {
   if (props.limit == 1) {
     value = urls[0]
   } else {
-    value = [...props.modelValue, ...urls]
+    value = props.preview ? [...props.modelValue, ...urls] : [...urls]
     if (value.length > props.limit) {
-      return toast(
-        '最多还能选择' + (props.limit - props.modelValue.length) + '张'
-      )
+      let limit = props.preview
+        ? props.limit - props.modelValue.length
+        : props.limit
+      return toast('最多还能选择' + limit + '张')
     }
   }
-  if (value) {
+  if (value && props.preview) {
     emit('update:modelValue', value)
+  }
+  if (!props.preview && typeof callbackFunction.value === 'function') {
+    callbackFunction.value(value)
   }
   close()
 }
@@ -56,6 +68,10 @@ const removeImage = (url: any) => {
     props.modelValue.filter((u: any) => u !== url)
   )
 }
+
+defineExpose({
+  open
+})
 </script>
 
 <template>

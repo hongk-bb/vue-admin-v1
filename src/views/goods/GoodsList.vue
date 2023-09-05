@@ -6,6 +6,7 @@ import ChooseImage from '@/components/ChooseImage.vue'
 import Search from '@/components/Search.vue'
 import SearchItem from '@/components/SearchItem.vue'
 import Banners from './Banners.vue'
+import Content from './Content.vue'
 
 import { useInitTable, useInitForm } from '@/hooks/useCommon'
 import { useGoodsStore } from '@/stores/goods'
@@ -112,6 +113,10 @@ categoryStore
 // 设置轮播图
 const bannersRef = ref<any>(null)
 const handleSetGoodsBanners = (row: any) => bannersRef.value.open(row)
+
+// 设置商品详情
+const contentRef = ref<any>(null)
+const handleSetGoodsContent = (row: any) => contentRef.value.open(row)
 </script>
 
 <template>
@@ -275,7 +280,13 @@ const handleSetGoodsBanners = (row: any) => bannersRef.value.open(row)
                 >设置轮播图</el-button
               >
 
-              <el-button class="px-1" type="primary" size="small" text
+              <el-button
+                class="px-1"
+                :type="!scope.row.content ? 'danger' : 'primary'"
+                size="small"
+                text
+                @click="handleSetGoodsContent(scope.row)"
+                :loading="scope.row.contentLoading"
                 >商品详情</el-button
               >
 
@@ -397,6 +408,7 @@ const handleSetGoodsBanners = (row: any) => bannersRef.value.open(row)
     </el-card>
 
     <Banners ref="bannersRef" @reload-data="getData" />
+    <Content ref="contentRef" @reload-data="getData" />
   </div>
 </template>
 

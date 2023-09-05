@@ -27,7 +27,7 @@ export function deleteGoods(ids: any) {
   })
 }
 
-export function readGoods(id: number) {
+export function readGoods(id: number){
   return service.get(`/admin/goods/read/${id}`)
 }
 
