@@ -76,3 +76,20 @@ function swapArray(arr: any, index1: number, index2: number) {
   arr[index1] = arr.splice(index2, 1, arr[index1])[0]
   return arr
 }
+
+// sku排列算法
+export function cartesianProductOf() {
+  return Array.prototype.reduce.call(
+    arguments,
+    function (a: any, b: any) {
+      var ret: any = []
+      a.forEach(function (a: any) {
+        b.forEach(function (b: any) {
+          ret.push(a.concat([b]))
+        })
+      })
+      return ret
+    },
+    [[]]
+  )
+}

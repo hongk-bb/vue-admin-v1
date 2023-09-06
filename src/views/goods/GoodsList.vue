@@ -273,7 +273,12 @@ const handleSetGoodsSkus = (row: any) => skusRef.value.open(row)
 
               <el-button
                 class="px-1"
-                type="primary"
+                :type="
+                  (scope.row.sku_type == 0 && !scope.row.sku_value) ||
+                  (scope.row.sku_type == 1 && !scope.row.goods_skus.length)
+                    ? 'danger'
+                    : 'primary'
+                "
                 size="small"
                 text
                 :loading="scope.row.skusLoading"

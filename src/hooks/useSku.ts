@@ -1,6 +1,10 @@
-import { nextTick, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { useGoodsStore } from '@/stores/goods'
-import { useArrayMoveUp, useArrayMoveDown } from '@/utils/util'
+import {
+  useArrayMoveUp,
+  useArrayMoveDown,
+  cartesianProductOf
+} from '@/utils/util'
 const goodsStore = useGoodsStore()
 
 // 当前商品ID
@@ -8,6 +12,8 @@ export const goodsId = ref<any>(0)
 
 // 规格选项列表
 export const sku_card_list = ref<any>([])
+
+export const sku_list = ref<any>([])
 
 // 初始化规格选项列表
 export function initSkuCardList(d: any) {
@@ -20,6 +26,8 @@ export function initSkuCardList(d: any) {
     })
     return item
   })
+
+  sku_list.value = d.goodsSkus
 }
 
 // 添加规格选项
@@ -75,6 +83,7 @@ export function handleDelete(item: any) {
     if (i != -1) {
       sku_card_list.value.splice(i, 1)
     }
+    getTableData()
   })
 }
 
@@ -97,6 +106,7 @@ export function sortCard(action: any, index: number) {
     })
     .then(res => {
       func(sku_card_list.value, index)
+      getTableData()
     })
     .finally(() => {
       bodyLoading.value = false
@@ -116,6 +126,7 @@ export function handleChooseSetGoodsSkusCard(id: number, data: any) {
         o.text = o.value || '属性值'
         return o
       })
+      getTableData()
     })
     .finally(() => {
       item.loading = false
@@ -139,6 +150,7 @@ export function initSkusCardItem(id: number) {
         if (i != -1) {
           item.goodsSkusCardValue.splice(i, 1)
         }
+        getTableData()
       })
       .finally(() => {
         loading.value = false
@@ -188,7 +200,10 @@ export function initSkusCardItem(id: number) {
         order: tag.order,
         value: value
       })
-      .then(res => [(tag.value = value)])
+      .then(res => {
+        tag.value = value
+        getTableData()
+      })
       .catch(err => {
         tag.text = tag.value
       })
@@ -208,4 +223,130 @@ export function initSkusCardItem(id: number) {
     loading,
     handleChange
   }
+}
+
+// 初始化表格
+export function initSkuTable() {
+  const skuLabels = computed(() =>
+    sku_card_list.value.filter((v: any) => v.goodsSkusCardValue.length > 0)
+  )
+
+  // 获取表头
+  const tableThs = computed(() => {
+    let length = skuLabels.value.length
+    return [
+      {
+        name: '商品规格',
+        colspan: length,
+        width: '',
+        rowspan: length > 0 ? 1 : 2
+      },
+      {
+        name: '销售价',
+        width: '100',
+        rowspan: 2
+      },
+      {
+        name: '市场价',
+        width: '100',
+        rowspan: 2
+      },
+      {
+        name: '成本价',
+        width: '100',
+        rowspan: 2
+      },
+      {
+        name: '库存',
+        width: '100',
+        rowspan: 2
+      },
+      {
+        name: '体积',
+        width: '100',
+        rowspan: 2
+      },
+      {
+        name: '重量',
+        width: '100',
+        rowspan: 2
+      },
+      {
+        name: '编码',
+        width: '100',
+        rowspan: 2
+      }
+    ]
+  })
+
+  return {
+    skuLabels,
+    tableThs,
+    sku_list
+  }
+}
+
+// 获取规格表格数据
+function getTableData() {
+  setTimeout(() => {
+    if (sku_card_list.value.length === 0) return []
+
+    let list: any[] = []
+    sku_card_list.value.forEach((o: any) => {
+      if (o.goodsSkusCardValue && o.goodsSkusCardValue.length > 0) {
+        list.push(o.goodsSkusCardValue)
+      }
+    })
+
+    if (list.length == 0) {
+      return []
+    }
+
+    //@ts-ignore
+    let arr: any = cartesianProductOf(...list)
+
+    // 获取之前的规格列表，将规格ID排序之后转化成字符串
+    let beforeSkuList = JSON.parse(JSON.stringify(sku_list.value)).map(
+      (o: any) => {
+        if (!Array.isArray(o.skus)) {
+          o.skus = Object.keys(o.skus).map(k => o.skus[k])
+        }
+        o.skusId = o.skus
+          .sort((a: any, b: any) => a.id - b.id)
+          .map((s: any) => s.id)
+          .join(',')
+        return o
+      }
+    )
+
+    sku_list.value = []
+    sku_list.value = arr.map((skus: any) => {
+      let o = getBeforeSkuItem(JSON.parse(JSON.stringify(skus)), beforeSkuList)
+      return {
+        code: o?.code || '',
+        cprice: o?.cprice || '0.00',
+        goods_id: goodsId.value,
+        image: o?.image || '',
+        oprice: o?.oprice || '0.00',
+        pprice: o?.pprice || '0.00',
+        skus,
+        stock: o?.stock || 0,
+        volume: o?.volume || 0,
+        weight: o?.weight || 0
+      }
+    })
+  }, 200)
+}
+
+function getBeforeSkuItem(skus: any, beforeSkuList: any) {
+  let skusId = skus
+    .sort((a: any, b: any) => a.id - b.id)
+    .map((s: any) => s.id)
+    .join(',')
+  return beforeSkuList.find((o: any) => {
+    if (skus.length > o.skus.length) {
+      return skusId.indexOf(o.skusId) != -1
+    }
+    return o.skusId.indexOf(skusId) != -1
+  })
 }
