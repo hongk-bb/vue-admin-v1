@@ -7,19 +7,17 @@ const skusStore = useSkusStore()
 
 const dialogVisible = ref<any>(false)
 const activeId = ref<any>(0)
-const { loading, currentPage, limit, total, tableData, getData } = useInitTable(
-  {
-    getList: skusStore.getSkusListAction,
-    onGetListSuccess: (res: any) => {
-      tableData.value = res.list
-      total.value = res.totalCount
+const { currentPage, limit, total, tableData, getData } = useInitTable({
+  getList: skusStore.getSkusListAction,
+  onGetListSuccess: (res: any) => {
+    tableData.value = res.list
+    total.value = res.totalCount
 
-      if (tableData.value.length > 0) {
-        handleChangeActiveId(tableData.value[0].id)
-      }
+    if (tableData.value.length > 0) {
+      handleChangeActiveId(tableData.value[0].id)
     }
   }
-)
+})
 
 const callbackFunction = ref<any>(null)
 const open = (callback = null) => {
