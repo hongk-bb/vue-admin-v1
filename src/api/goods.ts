@@ -6,6 +6,7 @@ export function getGoodsList(page: number, query: any = {}) {
   return service.get(`/admin/goods/${page}${r}`)
 }
 
+// 批量上架/下架
 export function updateGoodsStatus(ids: any, status: any) {
   return service.post(`/admin/goods/changestatus`, {
     ids,
@@ -27,10 +28,30 @@ export function deleteGoods(ids: any) {
   })
 }
 
-export function readGoods(id: number){
+export function readGoods(id: number) {
   return service.get(`/admin/goods/read/${id}`)
 }
 
 export function setGoodsBanner(id: number, data: any) {
   return service.post(`/admin/goods/banners/${id}`, data)
+}
+
+export function updateGoodsSkus(id: number, data: any) {
+  return service.post(`/admin/goods/updateskus/${id}`, data)
+}
+
+export function createGoodsSkusCard(data: any) {
+  return service.post(`/admin/goods_skus_card`, data)
+}
+
+export function updateGoodsSkusCard(id: number, data: any) {
+  return service.post(`/admin/goods_skus_card/${id}`, data)
+}
+
+export function deleteGoodsSkusCard(id: number) {
+  return service.post(`/admin/goods_skus_card/${id}/delete`)
+}
+
+export function sortGoodsSkusCard(data: any) {
+  return service.post(`/admin/goods_skus_card/sort`, data)
 }

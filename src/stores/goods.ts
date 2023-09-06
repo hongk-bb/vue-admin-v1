@@ -7,7 +7,12 @@ import {
   updateGoods,
   deleteGoods,
   readGoods,
-  setGoodsBanner
+  setGoodsBanner,
+  updateGoodsSkus,
+  createGoodsSkusCard,
+  updateGoodsSkusCard,
+  deleteGoodsSkusCard,
+  sortGoodsSkusCard
 } from '@/api/goods'
 
 export const useGoodsStore = defineStore('goods', {
@@ -36,6 +41,21 @@ export const useGoodsStore = defineStore('goods', {
     },
     async setGoodsBannerAction(id: number, data: any) {
       await setGoodsBanner(id, data)
+    },
+    async updateGoodsSkusAction(id: number, data: any) {
+      await updateGoodsSkus(id, data)
+    },
+    async createGoodsSkusCardAction(data: any) {
+      await createGoodsSkusCard(data)
+    },
+    async updateGoodsSkusCardAction(id: number, data: any) {
+      await updateGoodsSkusCard(id, data)
+    },
+    async deleteGoodsSkusCardAction(id: number) {
+      await deleteGoodsSkusCard(id)
+    },
+    async sortGoodsSkusCardAction(data: any) {
+      await sortGoodsSkusCard(data)
     }
   }
 })

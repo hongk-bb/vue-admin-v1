@@ -7,6 +7,7 @@ import Search from '@/components/Search.vue'
 import SearchItem from '@/components/SearchItem.vue'
 import Banners from './Banners.vue'
 import Content from './Content.vue'
+import Skus from './Skus.vue'
 
 import { useInitTable, useInitForm } from '@/hooks/useCommon'
 import { useGoodsStore } from '@/stores/goods'
@@ -117,6 +118,10 @@ const handleSetGoodsBanners = (row: any) => bannersRef.value.open(row)
 // 设置商品详情
 const contentRef = ref<any>(null)
 const handleSetGoodsContent = (row: any) => contentRef.value.open(row)
+
+// 设置商品规格
+const skusRef = ref<any>(null)
+const handleSetGoodsSkus = (row: any) => skusRef.value.open(row)
 </script>
 
 <template>
@@ -265,9 +270,17 @@ const handleSetGoodsContent = (row: any) => contentRef.value.open(row)
                 @click="handleEdit(scope.row)"
                 >修改</el-button
               >
-              <el-button class="px-1" type="primary" size="small" text
+
+              <el-button
+                class="px-1"
+                type="primary"
+                size="small"
+                text
+                :loading="scope.row.skusLoading"
+                @click="handleSetGoodsSkus(scope.row)"
                 >商品规格</el-button
               >
+
               <el-button
                 class="px-1"
                 :type="
@@ -407,8 +420,9 @@ const handleSetGoodsContent = (row: any) => contentRef.value.open(row)
       </FormDrawer>
     </el-card>
 
-    <Banners ref="bannersRef" @reload-data="getData" />
-    <Content ref="contentRef" @reload-data="getData" />
+    <banners ref="bannersRef" @reload-data="getData" />
+    <content ref="contentRef" @reload-data="getData" />
+    <skus ref="skusRef" @reload-data="getData" />
   </div>
 </template>
 

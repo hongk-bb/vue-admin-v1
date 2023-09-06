@@ -61,3 +61,18 @@ export function queryParams(query: any) {
   r = r ? '?' + r : ''
   return r
 }
+
+// 上移
+export function useArrayMoveUp(arr: any, index: number) {
+  swapArray(arr, index, index - 1)
+}
+
+// 下移
+export function useArrayMoveDown(arr: any, index: number) {
+  swapArray(arr, index, index + 1)
+}
+
+function swapArray(arr: any, index1: number, index2: number) {
+  arr[index1] = arr.splice(index2, 1, arr[index1])[0]
+  return arr
+}
