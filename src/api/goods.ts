@@ -28,6 +28,18 @@ export function deleteGoods(ids: any) {
   })
 }
 
+export function restoreGoods(ids: any) {
+  return service.post(`/admin/goods/restore`, {
+    ids
+  })
+}
+
+export function destroyGoods(ids: any) {
+  return service.post(`/admin/goods/destroy`, {
+    ids
+  })
+}
+
 export function readGoods(id: number) {
   return service.get(`/admin/goods/read/${id}`)
 }

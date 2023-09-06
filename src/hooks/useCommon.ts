@@ -47,7 +47,7 @@ export function useInitTable(opt: any = {}) {
   getData()
 
   // 删除
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: any) => {
     loading.value = true
     opt
       .delete(id)
@@ -131,7 +131,8 @@ export function useInitTable(opt: any = {}) {
     handleSelectionChange,
     multipleTableRef,
     handleMultiDelete,
-    handleMultiStatusChange
+    handleMultiStatusChange,
+    multiSelectionIds
   }
 }
 

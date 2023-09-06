@@ -12,6 +12,7 @@ import Skus from './Skus.vue'
 import { useInitTable, useInitForm } from '@/hooks/useCommon'
 import { useGoodsStore } from '@/stores/goods'
 import { useCategoryStore } from '@/stores/category'
+import { toast } from '@/utils/util'
 
 const goodsStore = useGoodsStore()
 const categoryStore = useCategoryStore()
@@ -32,7 +33,8 @@ const {
   limit,
   getData,
   handleDelete,
-  handleMultiStatusChange
+  handleMultiStatusChange,
+  multiSelectionIds
 } = useInitTable({
   searchForm: {
     keyword: ''
@@ -122,6 +124,28 @@ const handleSetGoodsContent = (row: any) => contentRef.value.open(row)
 // 设置商品规格
 const skusRef = ref<any>(null)
 const handleSetGoodsSkus = (row: any) => skusRef.value.open(row)
+
+const handleRestoreGoods = () =>
+  useMultiAction(goodsStore.restoreGoodsAction, '恢复')
+
+const handleDestroyGoods = () =>
+  useMultiAction(goodsStore.destroyGoodsAction, '彻底删除')
+
+function useMultiAction(func: any, msg: any) {
+  loading.value = true
+  func(multiSelectionIds.value)
+    .then(() => {
+      toast(msg + '成功')
+      // 清空选中
+      if (multipleTableRef.value) {
+        multipleTableRef.value.clearSelection()
+      }
+      getData()
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
 </script>
 
 <template>
@@ -166,11 +190,37 @@ const handleSetGoodsSkus = (row: any) => skusRef.value.open(row)
 
       <!-- 新增|刷新 -->
       <ListHeader
-        layout="create,delete,refresh"
+        layout="create,refresh"
         @create="handleCreate"
         @refresh="getData"
-        @delete="handleMultiDelete"
       >
+        <el-button
+          type="danger"
+          size="small"
+          @click="handleMultiDelete"
+          v-if="searchForm.tab != 'delete'"
+          >批量删除</el-button
+        >
+        <el-button
+          type="warning"
+          size="small"
+          @click="handleRestoreGoods"
+          v-else
+          >恢复商品</el-button
+        >
+
+        <el-popconfirm
+          v-if="searchForm.tab == 'delete'"
+          title="是否要彻底删除该商品？"
+          confirmButtonText="确认"
+          cancelButtonText="取消"
+          @confirm="handleDestroyGoods"
+        >
+          <template #reference>
+            <el-button type="danger" size="small">彻底删除</el-button>
+          </template>
+        </el-popconfirm>
+
         <el-button
           size="small"
           @click="handleMultiStatusChange(1)"
@@ -312,7 +362,7 @@ const handleSetGoodsSkus = (row: any) => skusRef.value.open(row)
                 title="是否要删除该商品？"
                 confirmButtonText="确认"
                 cancelButtonText="取消"
-                @confirm="handleDelete(scope.row.id)"
+                @confirm="handleDelete([scope.row.id])"
               >
                 <template #reference>
                   <el-button class="px-1" text type="primary" size="small"
