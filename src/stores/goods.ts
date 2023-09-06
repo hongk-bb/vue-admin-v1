@@ -12,7 +12,11 @@ import {
   createGoodsSkusCard,
   updateGoodsSkusCard,
   deleteGoodsSkusCard,
-  sortGoodsSkusCard
+  sortGoodsSkusCard,
+  createGoodsSkusCardValue,
+  updateGoodsSkusCardValue,
+  deleteGoodsSkusCardValue,
+  chooseAndSetGoodsSkusCard
 } from '@/api/goods'
 
 export const useGoodsStore = defineStore('goods', {
@@ -56,6 +60,18 @@ export const useGoodsStore = defineStore('goods', {
     },
     async sortGoodsSkusCardAction(data: any) {
       await sortGoodsSkusCard(data)
+    },
+    async createGoodsSkusCardValueAction(data: any) {
+      await createGoodsSkusCardValue(data)
+    },
+    async updateGoodsSkusCardValueAction(id: number, data: any) {
+      await updateGoodsSkusCardValue(id,data)
+    },
+    async deleteGoodsSkusCardValueAction(id: number) {
+      await deleteGoodsSkusCardValue(id)
+    },
+    async chooseAndSetGoodsSkusCardAction(id: number, data: any) {
+      await chooseAndSetGoodsSkusCard(id,data)
     }
   }
 })

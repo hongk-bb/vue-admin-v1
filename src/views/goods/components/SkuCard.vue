@@ -1,5 +1,8 @@
 <script lang="ts" setup>
+import { ref } from 'vue'
 import SkuCardItem from './SkuCardItem.vue'
+import ChooseSku from '@/components/ChooseSku.vue'
+
 import {
   sku_card_list,
   addSkuCardEvent,
@@ -7,8 +10,19 @@ import {
   handleUpdate,
   handleDelete,
   sortCard,
-  bodyLoading
+  bodyLoading,
+  handleChooseSetGoodsSkusCard
 } from '@/hooks/useSku'
+
+const ChooseSkuRef = ref<any>(null)
+const handleChooseSku = (item: any) => {
+  ChooseSkuRef.value.open((value: any) => {
+    handleChooseSetGoodsSkusCard(item.id, {
+      name: value.name,
+      value: value.list
+    })
+  })
+}
 </script>
 
 <template>
@@ -29,7 +43,9 @@ import {
             @change="handleUpdate(item)"
           >
             <template #append>
-              <el-icon><more /></el-icon>
+              <el-icon class="cursor-pointer" @click="handleChooseSku(item)"
+                ><more
+              /></el-icon>
             </template>
           </el-input>
           <el-button
@@ -71,6 +87,8 @@ import {
       >添加规格选项</el-button
     >
   </el-form-item>
+
+  <ChooseSku ref="ChooseSkuRef" />
 </template>
 
 <style scoped>

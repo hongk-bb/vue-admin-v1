@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AsideList: typeof import('./src/components/AsideList.vue')['default']
     ChooseImage: typeof import('./src/components/ChooseImage.vue')['default']
+    ChooseSku: typeof import('./src/components/ChooseSku.vue')['default']
     CountTo: typeof import('./src/components/CountTo.vue')['default']
     Editor: typeof import('./src/components/Editor.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
@@ -17,6 +18,7 @@ declare module 'vue' {
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCascader: typeof import('element-plus/es')['ElCascader']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
+    ElCheckboxGroup: typeof import('element-plus/es')['ElCheckboxGroup']
     ElCheckTag: typeof import('element-plus/es')['ElCheckTag']
     ElCol: typeof import('element-plus/es')['ElCol']
     ElContainer: typeof import('element-plus/es')['ElContainer']

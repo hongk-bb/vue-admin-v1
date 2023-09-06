@@ -103,17 +103,46 @@ export function sortCard(action: any, index: number) {
     })
 }
 
+// 选择设置规格
+export function handleChooseSetGoodsSkusCard(id: number, data: any) {
+  let item = sku_card_list.value.find((o: any) => o.id == id)
+  item.loading = true
+  goodsStore
+    .chooseAndSetGoodsSkusCardAction(id, data)
+    .then((res: any) => {
+      console.log(res)
+      item.name = item.text = res.goods_skus_card.name
+      item.goodsSkusCardValue = res.goods_skus_card_value.map((o: any) => {
+        o.text = o.value || '属性值'
+        return o
+      })
+    })
+    .finally(() => {
+      item.loading = false
+    })
+}
+
 // 初始化规格的值
 export function initSkusCardItem(id: number) {
   const item = sku_card_list.value.find((o: any) => o.id == id)
-
+  const loading = ref(false)
   const inputValue = ref('')
-  const dynamicTags = ref(['Tag 1', 'Tag 2', 'Tag 3'])
   const inputVisible = ref(false)
   const InputRef = ref()
 
   const handleClose = (tag: any) => {
-    dynamicTags.value.splice(dynamicTags.value.indexOf(tag), 1)
+    loading.value = true
+    goodsStore
+      .deleteGoodsSkusCardValueAction(tag.id)
+      .then(res => {
+        let i = item.goodsSkusCardValue.findIndex((o: any) => o.id === tag.id)
+        if (i != -1) {
+          item.goodsSkusCardValue.splice(i, 1)
+        }
+      })
+      .finally(() => {
+        loading.value = false
+      })
   }
 
   const showInput = () => {
@@ -124,11 +153,48 @@ export function initSkusCardItem(id: number) {
   }
 
   const handleInputConfirm = () => {
-    if (inputValue.value) {
-      dynamicTags.value.push(inputValue.value)
+    if (!inputValue.value) {
+      inputVisible.value = false
+      return
     }
-    inputVisible.value = false
-    inputValue.value = ''
+
+    loading.value = true
+    goodsStore
+      .createGoodsSkusCardValueAction({
+        goods_skus_card_id: id,
+        name: item.name,
+        order: 50,
+        value: inputValue.value
+      })
+      .then((res: any) => {
+        item.goodsSkusCardValue.push({
+          ...res,
+          text: res.value
+        })
+      })
+      .finally(() => {
+        inputVisible.value = false
+        inputValue.value = ''
+        loading.value = false
+      })
+  }
+
+  const handleChange = (value: any, tag: any) => {
+    loading.value = true
+    goodsStore
+      .updateGoodsSkusCardValueAction(tag.id, {
+        goods_skus_card_id: id,
+        name: item.name,
+        order: tag.order,
+        value: value
+      })
+      .then(res => [(tag.value = value)])
+      .catch(err => {
+        tag.text = tag.value
+      })
+      .finally(() => {
+        loading.value = false
+      })
   }
 
   return {
@@ -138,6 +204,8 @@ export function initSkusCardItem(id: number) {
     InputRef,
     handleClose,
     showInput,
-    handleInputConfirm
+    handleInputConfirm,
+    loading,
+    handleChange
   }
 }

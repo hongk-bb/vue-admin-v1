@@ -55,3 +55,19 @@ export function deleteGoodsSkusCard(id: number) {
 export function sortGoodsSkusCard(data: any) {
   return service.post(`/admin/goods_skus_card/sort`, data)
 }
+
+export function createGoodsSkusCardValue(data: any) {
+  return service.post(`/admin/goods_skus_card_value`, data)
+}
+
+export function updateGoodsSkusCardValue(id: number, data: any) {
+  return service.post(`/admin/goods_skus_card_value/${id}`, data)
+}
+
+export function deleteGoodsSkusCardValue(id: number) {
+  return service.post(`/admin/goods_skus_card_value/${id}/delete`)
+}
+
+export function chooseAndSetGoodsSkusCard(id: number, data: any) {
+  return service.post(`/admin/goods_skus_card/${id}/set`, data)
+}

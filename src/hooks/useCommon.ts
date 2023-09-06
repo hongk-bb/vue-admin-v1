@@ -14,13 +14,13 @@ export function useInitTable(opt: any = {}) {
     }
   }
 
-  const tableData = ref([])
-  const loading = ref(false)
+  const tableData = ref<any>([])
+  const loading = ref<any>(false)
 
   // 分页
-  const currentPage = ref(1)
-  const total = ref(0)
-  const limit = ref(10)
+  const currentPage = ref<any>(1)
+  const total = ref<any>(0)
+  const limit = ref<any>(10)
 
   // 获取数据
   function getData(p: any = null) {
@@ -79,7 +79,7 @@ export function useInitTable(opt: any = {}) {
   const handleSelectionChange = (e: any) => {
     multiSelectionIds.value = e.map((o: any) => o.id)
   }
-  
+
   // 批量删除
   const multipleTableRef = ref<any>(null)
   const handleMultiDelete = () => {
