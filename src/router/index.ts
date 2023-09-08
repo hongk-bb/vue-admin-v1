@@ -168,6 +168,23 @@ const asyncRoutes = [
     meta: {
       title: '物流设置'
     }
+  },
+  ,
+  {
+    path: '/distribution/index',
+    name: '/distribution/index',
+    component: () => import('../views/distribution/Distribution.vue'),
+    meta: {
+      title: '分销员管理'
+    }
+  },
+  {
+    path: '/distribution/setting',
+    name: '/distribution/setting',
+    component: () => import('../views/distribution/Setting.vue'),
+    meta: {
+      title: '分销设置'
+    }
   }
 ]
 
@@ -178,7 +195,7 @@ const addRoutes = (menus: any[]): boolean => {
 
   const findAndAddRoutesByMenus = (arr: any[]) => {
     arr.forEach(e => {
-      let item = asyncRoutes.find(o => o.path === e.frontpath)
+      let item = asyncRoutes.find((o: any) => o?.path === e?.frontpath)
       if (item && !router.hasRoute(item.path)) {
         router.addRoute('admin', item)
         hasNewRoutes = true
