@@ -152,6 +152,22 @@ const asyncRoutes = [
     meta: {
       title: '会员等级'
     }
+  },
+  {
+    path: '/setting/buy',
+    name: '/setting/buy',
+    component: () => import('../views/setting/BuySetting.vue'),
+    meta: {
+      title: '支付设置'
+    }
+  },
+  {
+    path: '/setting/ship',
+    name: '/setting/ship',
+    component: () => import('../views/setting/ShipSetting.vue'),
+    meta: {
+      title: '物流设置'
+    }
   }
 ]
 
