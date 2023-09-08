@@ -5,8 +5,9 @@ import { toast } from '@/utils/util'
 import { useManagerStore } from '@/stores/manager'
 
 const service = axios.create({
-  baseURL: '/api'
+  // baseURL: '/api'
   // baseURL: 'http://ceshi13.dishait.cn'
+  baseURL:import.meta.env.VITE_APP_BASE_API,
 })
 
 // 添加请求拦截器
