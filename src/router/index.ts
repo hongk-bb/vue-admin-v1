@@ -144,6 +144,14 @@ const asyncRoutes = [
     meta: {
       title: '规格管理'
     }
+  },
+  {
+    path: '/level/list',
+    name: '/level/list',
+    component: () => import('../views/level/LevelList.vue'),
+    meta: {
+      title: '会员等级'
+    }
   }
 ]
 

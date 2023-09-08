@@ -17,6 +17,7 @@ export const useNoticeStore = defineStore('notice', {
       const res = await getNoticeList(page)
       this.totalCount = res?.totalCount
       this.list = res?.list
+      return res
     },
     async createNoticeAction(data: any) {
       await createNotice(data)
